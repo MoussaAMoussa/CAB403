@@ -1,18 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dbl_vector.h"
+#define DV_INITIAL_CAPACITY 4
+#define DV_GROWTH_FACTOR
 
 void dv_init( dbl_vector_t* vec ) {
     typedef struct {
-    double* data;      // Pointer to the dynamically allocated array of doubles
-    size_t size;       // Number of elements currently in the vector
-    size_t capacity;   // Total allocated capacity of the vector
-} dbl_vector_t;
+        double* data;
+        size_t size;
+        size_t capacity;
+    } dbl_vector_t;
 
+    {
+        vec->size = 0;
+        vec->capacity = DV_INITIAL_CAPACITY;
+        vec-> data = (double*) malloc(DV_INITIAL_CAPACITY * sizeof(double));
+
+        if (vec->data == NULL) {
+        // Handle memory allocation failure
+        printf("Memory allocation failed!\n");
+        exit(1);
+        }
+        
+    }
 }
 
 void dv_ensure_capacity( dbl_vector_t* vec, size_t new_size ) {
-    // INSERT SOLUTION HERE
+    size_t old_capacity = vec->capacity;
+    size_t old_size = vec->size;
+    double* old_data = vec->data;
+    
+    if (new_size <= old_capacity) {
+        return;
+    }
+
+    size_t new_capacity = old_capacity * DV_GROWTH_FACTOR;
+    if (new_capacity < new_size) {
+        new_capacity = new_size;
+    }
+    
+    double* new_data = (double*) realloc(old_data, new_capacity * sizeof(double));
+
+    if (new_data == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+
+    vec->data = new_data;
+    vec->capacity = new_capacity;
 }
 
 void dv_destroy( dbl_vector_t* vec ) {
